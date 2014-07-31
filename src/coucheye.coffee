@@ -14,7 +14,7 @@ class CouchEye extends EventEmitter
             @_feeds = options._feeds
             @_pipes = options._pipes
         else
-            {@_feeds, @_pipes} = setup options
+            {feeds: @_feeds, pipes: @_pipes} = setup options
 
         # Setup Redis client
         if options.redis?

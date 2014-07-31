@@ -1,6 +1,6 @@
 {
   "name": "coucheye",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tool to publish CouchDb _changes to Amazon AWS SNS",
   "author": "Mark van Cuijk <github@mark.van-cuijk.nl>",
   "license": "proprietary",
