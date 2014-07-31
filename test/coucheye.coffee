@@ -22,11 +22,11 @@ describe 'CouchEye', ->
                 set: sinon.stub().callsArgWithAsync 2, null, 'OK'
                 multi: -> multi
             redisPrefix: 'prefix.'
-            feeds:
+            _feeds:
                 db1: db1
                 db2: mockDb()
                 db3: mockDb()
-            pipes:
+            _pipes:
                 pipe1:
                     feedName: 'db1'
                     feed: db1
@@ -53,9 +53,9 @@ describe 'CouchEye', ->
         coucheye options
         # then
         process.nextTick ->
-            expect(options.feeds.db1.since).to.be 'seq1'
-            expect(options.feeds.db2.since).to.be undefined
-            expect(options.feeds.db3.since).to.be 'seq2'
+            expect(options._feeds.db1.since).to.be 'seq1'
+            expect(options._feeds.db2.since).to.be undefined
+            expect(options._feeds.db3.since).to.be 'seq2'
             done()
 
     it 'does not yet follow the feeds when sequence numbers are known, but start() isn\'t called yet', (done) ->
@@ -63,7 +63,7 @@ describe 'CouchEye', ->
         coucheye options
         # then
         process.nextTick ->
-            expect(options.feeds.db1.follow.called).to.be false
+            expect(options._feeds.db1.follow.called).to.be false
             done()
 
     it 'follows the feeds when start() is called and sequence numbers are known', (done) ->
@@ -72,7 +72,7 @@ describe 'CouchEye', ->
         process.nextTick ->
             cy.start()
             # then
-            expect(options.feeds.db1.follow.called).to.be true
+            expect(options._feeds.db1.follow.called).to.be true
             done()
 
     it 'does not yet follow the feeds when start() is, but sequence numbers aren\'t known yet', ->
@@ -80,7 +80,7 @@ describe 'CouchEye', ->
         cy = coucheye options
         cy.start()
         # then
-        expect(options.feeds.db1.follow.called).to.be false
+        expect(options._feeds.db1.follow.called).to.be false
 
     it 'follows the feeds when sequence numbers are received and start() has already been invoked', ->
         # when
@@ -88,7 +88,7 @@ describe 'CouchEye', ->
         cy.start()
         process.nextTick ->
             # then
-            expect(options.feeds.db1.follow.called).to.be true
+            expect(options._feeds.db1.follow.called).to.be true
 
     it 'emits an error when a feed emits an error', (done) ->
         # given
@@ -114,7 +114,7 @@ describe 'CouchEye', ->
         # when
         changeListener change
         # then
-        expect(options.pipes.pipe1.transform.calledWith change).to.be true
+        expect(options._pipes.pipe1.transform.calledWith change).to.be true
 
     it 'publishes the transformed change to SNS', ->
         # given
@@ -130,7 +130,7 @@ describe 'CouchEye', ->
         expectedPublish =
             TopicArn: 'arn:aws:sns:us-east-1:123456789012:MyNewTopic'
             Message: '{"transformed":true}'
-        expect(options.pipes.pipe1.endpoint.publish.calledWith expectedPublish).to.be true
+        expect(options._pipes.pipe1.endpoint.publish.calledWith expectedPublish).to.be true
 
     it 'does not publish the transformed change to SNS when it is null', ->
         # given
@@ -140,11 +140,11 @@ describe 'CouchEye', ->
             id: ':id'
             seq: 'seq3'
             doc: {}
-        options.pipes.pipe1.transform = sinon.stub().returns null
+        options._pipes.pipe1.transform = sinon.stub().returns null
         # when
         changeListener change
         # then
-        expect(options.pipes.pipe1.endpoint.publish.called).to.be false
+        expect(options._pipes.pipe1.endpoint.publish.called).to.be false
 
     it 'emits an error when publishing to SNS fails', (done) ->
         # given
@@ -154,7 +154,7 @@ describe 'CouchEye', ->
             id: ':id'
             seq: 'seq3'
             doc: {}
-        options.pipes.pipe1.endpoint.publish = sinon.stub().callsArgWithAsync 1, new Error 'error message'
+        options._pipes.pipe1.endpoint.publish = sinon.stub().callsArgWithAsync 1, new Error 'error message'
         error = null
         cy.on 'error', (err) -> error = err
         # when

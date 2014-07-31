@@ -10,9 +10,9 @@ class CouchEye extends EventEmitter
     constructor: (options) ->
 
         # Setup the feeds and pipes
-        if options.feeds? and options.pipes?
-            @_feeds = options.feeds
-            @_pipes = options.pipes
+        if options._feeds? and options._pipes?
+            @_feeds = options._feeds
+            @_pipes = options._pipes
         else
             {@_feeds, @_pipes} = setup options
 
